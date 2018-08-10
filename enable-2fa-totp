@@ -1,0 +1,2 @@
+#!/bin/sh
+exec google-authenticator --time-based --disallow-reuse --window-size=3 --rate-limit=3 --rate-time=30 "${@}"
