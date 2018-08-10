@@ -8,9 +8,17 @@ project(google-authenticator-wrappers
 set(CMAKE_INSTALL_LIBDIR "lib")
 include(GNUInstallDirs)
 
+set(CMAKE_INSTALL_PAMDIR "/etc/pam.d"
+	CACHE PATH "Install path for pam.d files")
+
 install(
 	PROGRAMS
 		bin/disable-2fa
 		bin/enable-2fa-custom
 		bin/enable-2fa-totp
 	DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(
+	FILES
+		pam.d/google-auth
+	DESTINATION ${CMAKE_INSTALL_PAMDIR})
