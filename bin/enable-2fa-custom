@@ -1,2 +1,10 @@
 #!/bin/sh
-exec google-authenticator "${@}"
+set -e
+umask 077
+
+TMPDIR=$(mktemp -d)
+trap 'rm -r "${TMPDIR}"' EXIT
+google-authenticator "${@}" --secret="${TMPDIR}"/.new_secret
+
+[ -f "${TMPDIR}"/.new_secret ]
+exec gauthctl --enable "${TMPDIR}"/.new_secret

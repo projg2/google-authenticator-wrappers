@@ -1,0 +1,4 @@
+# pam.d stack for optional 2nd authentication step using 2FA
+
+auth       required	pam_google_authenticator.so no_increment_hotp nullok secret=@CMAKE_INSTALL_FULL_GAUTH_STATEDIR@/${USER}
+auth       required	pam_permit.so
