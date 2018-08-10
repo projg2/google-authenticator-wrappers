@@ -10,7 +10,7 @@ include(GNUInstallDirs)
 
 install(
 	PROGRAMS
-		disable-2fa
-		enable-2fa-custom
-		enable-2fa-totp
+		bin/disable-2fa
+		bin/enable-2fa-custom
+		bin/enable-2fa-totp
 	DESTINATION ${CMAKE_INSTALL_BINDIR})
