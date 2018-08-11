@@ -333,7 +333,10 @@ int main(int argc, char* argv[])
 	}
 
 	if (!authenticate(username))
+	{
+		free(state_path);
 		return 1;
+	}
 
 	assert(cmd > CMD_NULL && cmd < CMD_NEXT);
 	switch (cmd)
