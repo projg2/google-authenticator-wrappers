@@ -16,7 +16,7 @@ GNUInstallDirs_get_absolute_install_dir(
 set(GAUTH_USERNAME "root"
 	CACHE STRING "User owning gauth state files")
 
-configure_file(pam.d/google-auth.in pam.d/google-auth @ONLY)
+configure_file(pam.d/gauth.in pam.d/gauth @ONLY)
 add_definitions(
 	-DVERSION=\"${PROJECT_VERSION}\"
 	-DGAUTH_STATEDIR=\"${CMAKE_INSTALL_FULL_GAUTH_STATEDIR}\")
@@ -48,7 +48,7 @@ install(
 install(
 	FILES
 		pam.d/gauthctl
-		${CMAKE_BINARY_DIR}/pam.d/google-auth
+		${CMAKE_BINARY_DIR}/pam.d/gauth
 	DESTINATION ${CMAKE_INSTALL_PAMDIR})
 
 install(CODE "

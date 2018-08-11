@@ -1,4 +1,4 @@
-/* gauth-test -- trivial helper to test google-auth PAM stack
+/* gauth-test -- trivial helper to test gauth PAM stack
  * (c) 2018 Michał Górny
  * Licensed under 2-clause BSD license
  */
@@ -29,7 +29,7 @@ int main()
 		return 1;
 	}
 
-	ret = pam_start("google-auth", pw->pw_name, &conv, &pam_handle);
+	ret = pam_start("gauth", pw->pw_name, &conv, &pam_handle);
 	if (ret != PAM_SUCCESS)
 	{
 		fprintf(stderr, "Unable to start PAM conversation: %s\n",
