@@ -13,6 +13,9 @@ set(CMAKE_INSTALL_GAUTH_STATEDIR "/var/lib/gauth"
 GNUInstallDirs_get_absolute_install_dir(
 	CMAKE_INSTALL_FULL_GAUTH_STATEDIR CMAKE_INSTALL_GAUTH_STATEDIR)
 
+set(GAUTH_USERNAME "root"
+	CACHE STRING "User owning gauth state files")
+
 configure_file(pam.d/google-auth.in pam.d/google-auth @ONLY)
 add_definitions(
 	-DVERSION=\"${PROJECT_VERSION}\"
