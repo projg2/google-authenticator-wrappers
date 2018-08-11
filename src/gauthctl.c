@@ -228,6 +228,7 @@ bool enable(const char* state_path, const char* path)
 			perror("Reading config file failed");
 			close(out_fd);
 			close(in_fd);
+			unlink(tmp_buf);
 			free(tmp_buf);
 			return false;
 		}
@@ -238,6 +239,7 @@ bool enable(const char* state_path, const char* path)
 			perror("Writing temporary file failed");
 			close(out_fd);
 			close(in_fd);
+			unlink(tmp_buf);
 			free(tmp_buf);
 			return false;
 		}
@@ -251,6 +253,7 @@ bool enable(const char* state_path, const char* path)
 	if (ret != 0)
 	{
 		perror("Replacing state file failed");
+		unlink(tmp_buf);
 		free(tmp_buf);
 		return false;
 	}
