@@ -22,6 +22,10 @@ add_executable(gauthctl
 	src/gauthctl.c)
 target_link_libraries(gauthctl pam pam_misc)
 
+add_executable(gauth-test
+	src/gauth-test.c)
+target_link_libraries(gauth-test pam pam_misc)
+
 install(
 	PROGRAMS
 		bin/disable-2fa
@@ -32,6 +36,7 @@ install(
 install(
 	TARGETS
 		gauthctl
+		gauth-test
 	PERMISSIONS
 		OWNER_READ OWNER_WRITE OWNER_EXECUTE
 		GROUP_EXECUTE WORLD_EXECUTE SETUID
