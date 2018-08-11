@@ -131,8 +131,8 @@ bool authenticate(const char* username)
  */
 char* get_state_path(const char* username)
 {
-	const size_t buf_size
-		= (sizeof GAUTH_STATEDIR) + strlen(username) + 1;
+	/* note: sizeof includes the null terminator */
+	const size_t buf_size = (sizeof GAUTH_STATEDIR "/") + strlen(username);
 	char* buf = malloc(buf_size);
 
 	if (buf)
@@ -154,7 +154,9 @@ bool enable(const char* state_path, const char* path)
 	int out_fd;
 	int ret;
 
-	tmp_buf = malloc(strlen(state_path) + 4);
+	/* note: sizeof includes the null terminator */
+	const size_t buf_size = strlen(state_path) + (sizeof ".new");
+	tmp_buf = malloc(buf_size);
 	if (!tmp_buf)
 	{
 		perror("Memory allocation failed");
