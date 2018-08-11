@@ -136,7 +136,15 @@ char* get_state_path(const char* username)
 	char* buf = malloc(buf_size);
 
 	if (buf)
-		sprintf(buf, "%s/%s", GAUTH_STATEDIR, username);
+	{
+		int wr = snprintf(buf, buf_size, "%s/%s", GAUTH_STATEDIR, username);
+		if (wr < 0)
+		{
+			free(buf);
+			return NULL;
+		}
+		assert((size_t) wr < buf_size);
+	}
 	return buf;
 }
 
@@ -160,7 +168,17 @@ bool enable(const char* state_path, int in_fd)
 		perror("Memory allocation failed");
 		return false;
 	}
-	sprintf(tmp_buf, "%s.new", state_path);
+	else
+	{
+		int buf_wr = snprintf(tmp_buf, buf_size, "%s.new", state_path);
+		if (buf_wr < 0)
+		{
+			perror("Filename construction failed");
+			free(tmp_buf);
+			return false;
+		}
+		assert((size_t) buf_wr < buf_size);
+	}
 
 	/* write into a temporary file */
 	ret = unlink(tmp_buf);
