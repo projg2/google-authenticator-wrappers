@@ -25,7 +25,7 @@ static const bool not_reached = false;
 
 /* program long options */
 const struct option long_opts[] = {
-	{"enable", required_argument, NULL, 'e'},
+	{"enable", no_argument, NULL, 'e'},
 	{"disable", no_argument, NULL, 'd'},
 
 	{"help", no_argument, NULL, 'h'},
@@ -52,9 +52,9 @@ int usage(const char* prog_name, bool help)
 {
 	FILE* const out = help ? stdout : stderr;
 
-	fprintf(out, "Usage: %s --enable <config-path>\n", prog_name);
+	fprintf(out, "Usage: %s --enable\n", prog_name);
 	if (help)
-		fputs("            Enable gauth using specified config\n", out);
+		fputs("            Enable gauth using config supplied on fd 3\n", out);
 	fprintf(out, "       %s --disable\n", prog_name);
 	if (help)
 		fputs("            Disable gauth for the user\n", out);
@@ -143,14 +143,12 @@ char* get_state_path(const char* username)
 /**
  * enable gauth for current user
  * state_path: path to the state file
- * path: path to the new config file
+ * in_fd: file descriptor for the new config
  * returns true on success, false on error
  */
-bool enable(const char* state_path, const char* path)
+bool enable(const char* state_path, int in_fd)
 {
 	char* tmp_buf;
-	struct stat st;
-	int in_fd;
 	int out_fd;
 	int ret;
 
@@ -164,45 +162,11 @@ bool enable(const char* state_path, const char* path)
 	}
 	sprintf(tmp_buf, "%s.new", state_path);
 
-	/* note: we need to be extra careful to prevent symlink attacks */
-	in_fd = open(path, O_RDONLY|O_NOFOLLOW);
-	if (in_fd == -1)
-	{
-		perror("Unable to open new config file");
-		free(tmp_buf);
-		return false;
-	}
-
-	/* verify that the file was secure */
-	if (fstat(in_fd, &st) != 0)
-	{
-		perror("Unable to stat input file");
-		close(in_fd);
-		free(tmp_buf);
-		return false;
-	}
-
-	if (st.st_uid != getuid())
-	{
-		fputs("Input file is not owned by calling user\n", stderr);
-		close(in_fd);
-		free(tmp_buf);
-		return false;
-	}
-	if ((st.st_mode & 077) != 0)
-	{
-		fputs("Input file has insecure permissions (readable to others)\n", stderr);
-		close(in_fd);
-		free(tmp_buf);
-		return false;
-	}
-
 	/* write into a temporary file */
 	ret = unlink(tmp_buf);
 	if (ret != 0 && errno != ENOENT)
 	{
 		perror("Unable to pre-unlink temporary file");
-		close(in_fd);
 		free(tmp_buf);
 		return false;
 	}
@@ -211,7 +175,6 @@ bool enable(const char* state_path, const char* path)
 	if (out_fd == -1)
 	{
 		perror("Unable to open temporary file for writing");
-		close(in_fd);
 		free(tmp_buf);
 		return false;
 	}
@@ -225,11 +188,10 @@ bool enable(const char* state_path, const char* path)
 		rd = read(in_fd, buf, sizeof buf);
 		if (rd == 0)
 			break;
-		else if (rd == -1)
+		if (rd == -1)
 		{
 			perror("Reading config file failed");
 			close(out_fd);
-			close(in_fd);
 			unlink(tmp_buf);
 			free(tmp_buf);
 			return false;
@@ -240,7 +202,6 @@ bool enable(const char* state_path, const char* path)
 		{
 			perror("Writing temporary file failed");
 			close(out_fd);
-			close(in_fd);
 			unlink(tmp_buf);
 			free(tmp_buf);
 			return false;
@@ -248,7 +209,6 @@ bool enable(const char* state_path, const char* path)
 	}
 
 	close(out_fd);
-	close(in_fd);
 
 	/* now we can move the file! */
 	ret = rename(tmp_buf, state_path);
@@ -287,7 +247,6 @@ int main(int argc, char* argv[])
 {
 	char opt;
 	enum command cmd = CMD_NULL;
-	const char* path;
 	const char* username;
 	char* state_path;
 	bool ret;
@@ -298,7 +257,6 @@ int main(int argc, char* argv[])
 		{
 			case 'e':
 				cmd = CMD_ENABLE;
-				path = optarg;
 				break;
 			case 'd':
 				cmd = CMD_DISABLE;
@@ -342,7 +300,7 @@ int main(int argc, char* argv[])
 	switch (cmd)
 	{
 		case CMD_ENABLE:
-			ret = enable(state_path, path);
+			ret = enable(state_path, 3);
 			break;
 		case CMD_DISABLE:
 			ret = disable(state_path);

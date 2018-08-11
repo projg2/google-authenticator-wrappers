@@ -3,8 +3,8 @@ set -e
 umask 077
 
 TMPDIR=$(mktemp -d)
-trap 'rm -r "${TMPDIR}"' EXIT
+trap 'rm -r -f "${TMPDIR}"' EXIT
 google-authenticator "${@}" --secret="${TMPDIR}"/.new_secret
 
 [ -f "${TMPDIR}"/.new_secret ]
-exec gauthctl --enable "${TMPDIR}"/.new_secret
+gauthctl --enable 3< "${TMPDIR}"/.new_secret
