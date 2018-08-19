@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(google-authenticator-wrappers
-	VERSION 1
+	VERSION 3
 	LANGUAGES C)
 
 include(GNUInstallDirs)
