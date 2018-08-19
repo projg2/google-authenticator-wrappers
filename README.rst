@@ -10,19 +10,19 @@ Licensed under the terms of 2-clause BSD license
 Introduction
 ============
 This package provides a few wrappers for the purpose of using Google
-Authenticator PAM modules [#GAUTH]_ for 2-step SSH authentication
+Authenticator PAM modules [#GAUTH]_ for two-step SSH authentication
 securely.  It is specifically focused on the use in Gentoo
 Infrastructure [#GENTOO-2FA]_ but can be used on any multi-user system.
 It satisfies the following goals:
 
-1. HOTP/TOTP is used as 2nd step, combined with SSH pubkey
+1. HOTP/TOTP is used as second step, combined with SSH pubkey
    authentication.
 
-2. 2-step authentication is entirely optional.  Users who did not enable
-   it use regular pubkey-only authentication.
+2. Two-step authentication is entirely optional.  Users who did
+   not enable it use regular pubkey-only authentication.
 
 3. Secrets (and emergency scratch codes) are not readable to user,
-   and can only be modified (and 2nd step can only be disabled)
+   and can only be modified (and second step can only be disabled)
    after password authentication.
 
 
@@ -64,9 +64,13 @@ CMAKE_INSTALL_GAUTH_STATEDIR
 GAUTH_USERNAME
   User used to manage secrets (``root``).
 
-Of the installed executables, ``gauthctl`` and ``gauth-test`` need
-to be installed owned by ``GAUTH_USERNAME`` and setuid.  The statedir
-also should be owned by this user, and kept unreadable to other users.
+Please note that the ``install`` target does not take care of changing
+file ownerships or modifying configuration of live services.  You need
+to update your ``/etc/pam.d/ssh`` and OpenSSH or similar setup manually.
+
+You also need to make sure that ``gauthctl`` and ``gauth-test`` are both
+owned by ``GAUTH_USERNAME`` and setuid.  The statedir needs to also
+be owned by ``GAUTH_USERNAME``, and kept unreadable to other users.
 
 
 Usage
@@ -74,17 +78,17 @@ Usage
 The following executables are intended for user's direct use:
 
 disable-2fa
-  Disables 2nd step authentication for the current user.
+  Disables second step authentication for the current user.
 
 enable-2fa-custom
-  Enables 2nd step authentication with full google-authenticator prompt
-  set.
+  Enables second step authentication with full google-authenticator
+  prompt set.
 
 enable-2fa-totp
-  Enables 2nd step authentication with Gentoo TOTP defaults.
+  Enables second step authentication with Gentoo TOTP defaults.
 
 gauth-test
-  Performs a test 2nd step authentication.  Used to verify that
+  Performs a test second step authentication.  Used to verify that
   the current setup is working correctly.
 
 
@@ -98,7 +102,7 @@ mechanism, i.e. the regular user password) and updates the secret.
 The ``--enable`` option reads new configuration from fd 3, and writes
 it to the isolated secret directory after successful PAM authentication.
 The ``--disable`` option simply removes the secret, effectively
-disabling the 2nd step authentication.
+disabling the second step authentication.
 
 
 References
